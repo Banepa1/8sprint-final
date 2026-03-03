@@ -42,13 +42,14 @@ func TestAddGetDelete(t *testing.T) {
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	number, err := store.Add(parcel)
 	require.NoError(t, err)
-	assert.NotEqual(t, 0, number)
+	require.Positive(t, number)
 	// get
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	parcelChek, err := store.Get(number)
 	require.NoError(t, err)
 
+	assert.Positive(t, parcelChek.Number)
 	assert.Equal(t, parcel.Client, parcelChek.Client)
 	assert.Equal(t, parcel.Status, parcelChek.Status)
 	assert.Equal(t, parcel.Address, parcelChek.Address)
@@ -76,7 +77,7 @@ func TestSetAddress(t *testing.T) {
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	number, err := store.Add(parcel)
 	require.NoError(t, err)
-	assert.NotEqual(t, 0, number)
+	require.Positive(t, number)
 
 	// set address
 	// обновите адрес, убедитесь в отсутствии ошибки
@@ -104,7 +105,7 @@ func TestSetStatus(t *testing.T) {
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	number, err := store.Add(parcel)
 	require.NoError(t, err)
-	assert.NotEqual(t, 0, number)
+	require.Positive(t, number)
 
 	// set status
 	// обновите статус, убедитесь в отсутствии ошибки
@@ -144,7 +145,7 @@ func TestGetByClient(t *testing.T) {
 	for i := 0; i < len(parcels); i++ {
 		id, err := store.Add(parcels[i])// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 		require.NoError(t, err)
-		assert.NotEqual(t, 0, id)
+		require.Positive(t, id)
 
 		// обновляем идентификатор добавленной у посылки
 		parcels[i].Number = id
@@ -158,7 +159,7 @@ func TestGetByClient(t *testing.T) {
 	// убедитесь в отсутствии ошибки
 	require.NoError(t, err)
 	// убедитесь, что количество полученных посылок совпадает с количеством добавленных
-	assert.Equal(t, len(parcels), len(storedParcels))
+	assert.Len(t, parcels, len(storedParcels))
 
 	// check
 	for _, parcel := range storedParcels {
@@ -167,8 +168,6 @@ func TestGetByClient(t *testing.T) {
 		expected, exist := parcelMap[parcel.Number]
 		assert.True(t, exist)
 		// убедитесь, что значения полей полученных посылок заполнены верно
-		if exist {
-			assert.Equal(t, expected, parcel)
-		}
+		assert.Equal(t, expected, parcel)
 	}
 }
